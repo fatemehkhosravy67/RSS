@@ -6,14 +6,6 @@ import requests
 from .models import News
 
 
-class HelloView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        content = {'message': 'Hello, World!'}
-        return Response(content, status=status.HTTP_200_OK)
-
-
 class RSSView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -32,20 +24,11 @@ class RSSView(APIView):
             }
             News(author=rtn['author'], title=rtn['title'], description=rtn['description'], urlToImage=rtn['urlToImage'],
                  content=rtn['content']).save()
-            news = News.objects.all()
-            # if news is not None:
-            #     rtn = dict(author=news.author, title=news.title, description=news.description, urlToImage=news.urlToImage,
-            #                content=news.content)
-            return Response(news, status=status.HTTP_200_OK)
-        # desc = []
-        # title = []
-        # img = []
-        # for i in range(len(a)):
-        #     f = a[i]
-        #     title.append(f['title'])
-        #     desc.append(f['description'])
-        #     img.append(f['urlToImage'])
-        # mylist = zip(title, desc, img)
-        #
-        # content = {'mylist': mylist}
-        # return Response(content)
+        news = News.objects.all()
+        if news is not None:
+            rtn_news = []
+            for i in list(news):
+                rtn_new = dict(author=i.author, title=i.title, description=i.description, urlToImage=i.urlToImage,
+                               content=i.content)
+                rtn_news.append(rtn_new)
+            return Response(rtn_news, status=status.HTTP_200_OK)
